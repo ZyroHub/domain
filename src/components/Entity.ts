@@ -143,6 +143,10 @@ export abstract class Entity<
 		return this._changes;
 	}
 
+	public isDirty() {
+		return Object.keys(this._changes).length > 0;
+	}
+
 	public commit() {
 		this._changes = {};
 	}
