@@ -11,12 +11,6 @@ export class EntityGroup<T extends Entity<any, any, any, any>> extends Array<T> 
 		Object.setPrototypeOf(this, EntityGroup.prototype);
 	}
 
-	add(...items: T[]): this {
-		this.push(...items);
-
-		return this;
-	}
-
 	removeById(id: unknown): boolean {
 		const index = this.findIndex(item => String(item.id) === String(id));
 

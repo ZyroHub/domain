@@ -4,7 +4,7 @@
 
 ## ZyroHub - Domain
 
-This package contains the domain logic of the applications. It defines the essential entities, value objects, and repositories that form the foundation of a application.
+This package contains the domain logic of the applications. It defines the essential entities, and repositories that form the foundation of an application.
 
 ## Table of Contents
 
@@ -12,19 +12,22 @@ This package contains the domain logic of the applications. It defines the essen
 - [Table of Contents](#table-of-contents)
 - [Getting Started](#getting-started)
 - [Entities](#entities)
-    - [Creating a Basic Entity](#creating-a-basic-entity)
-    - [Custom ID Generation](#custom-id-generation)
-    - [Entity Relations](#entity-relations)
-    - [Customizing Entity Output with filterObject](#customizing-entity-output-with-filterobject)
-    - [Collecting list of changes](#collecting-list-of-changes)
+  - [Creating a Basic Entity](#creating-a-basic-entity)
+  - [Custom ID Generation](#custom-id-generation)
+  - [Entity Relations](#entity-relations)
+  - [Customizing Entity Output with filterObject](#customizing-entity-output-with-filterobject)
+  - [Collecting list of changes](#collecting-list-of-changes)
+  - [Group of Entities (EntityGroup)](#group-of-entities-entitygroup)
+    - [Getting an Entity by ID](#getting-an-entity-by-id)
+    - [Removing an Entity by ID](#removing-an-entity-by-id)
 - [Repositories](#repositories)
-    - [Defining the Repository Interface](#defining-the-repository-interface)
-    - [Creating a Repository](#creating-a-repository)
-    - [Repository Example Usage](#repository-example-usage)
-        - [Save](#save)
-        - [Create](#create)
-        - [Update](#update)
-        - [Delete](#delete)
+  - [Defining the Repository Interface](#defining-the-repository-interface)
+  - [Creating a Repository](#creating-a-repository)
+  - [Repository Example Usage](#repository-example-usage)
+    - [Save](#save)
+    - [Create](#create)
+    - [Update](#update)
+    - [Delete](#delete)
 
 ## Getting Started
 
@@ -80,6 +83,7 @@ const user = new UserEntity({
 });
 
 // raw data: { id: '1', name: 'John Doe', email: 'john.doe@example.com', password: 'securepassword' }
+// unwrap() returns the clean raw data (POJO) useful for database persistence, etc.
 console.log(user.unwrap());
 
 // processed data without password (to expose in public or other scenarios): { id: '1', name: 'John Doe', email: 'john.doe@example.com' }
@@ -266,6 +270,75 @@ console.log(user.getChanges()); // { name: 'Jane Doe', age: 31 }
 user.commit(); // resets the changes tracker
 ```
 
+### Group of Entities (EntityGroup)
+
+You can manage a collection of entities using the `EntityGroup` class. This class provides methods to manipulate and access multiple entities as a group.
+
+⚠️ **Note:** The `EntityGroup` class is a extension of the native JavaScript `Array` class, so you can use all standard array methods on it. (e.g., `map`, `filter`, `forEach`, etc.)
+
+```typescript
+import { EntityGroup } from '@zyrohub/domain';
+
+import { UserEntity } from './UserEntity.js';
+
+// Creating an EntityGroup from a list of UserEntity instances
+const usersGroupFromEntities = EntityGroup.fromList([
+	new UserEntity({
+		id: '1',
+		name: 'John Doe',
+		email: 'john.doe@example.com',
+		password: 'securepassword',
+		age: 30
+	}),
+	new UserEntity({
+		id: '2',
+		name: 'Jane Smith',
+		email: 'jane.smith@example.com',
+		password: 'anothersecurepassword',
+		age: 25
+	})
+]);
+
+// Creating a new EntityGroup directly from raw data (database data)
+// Entity automatically add the fromList static method to create groups from raw data
+const usersGroupFromRaw = UserEntity.fromList([
+	{
+		id: '1',
+		name: 'John Doe',
+		email: 'john.doe@example.com',
+		password: 'securepassword',
+		age: 30
+	},
+	{
+		id: '2',
+		name: 'Jane Smith',
+		email: 'jane.smith@example.com',
+		password: 'anothersecurepassword',
+		age: 25
+	}
+]);
+```
+
+#### Getting an Entity by ID
+
+You can retrieve an entity from the group by its ID using the `getById` method.
+
+```typescript
+const user = usersGroup.getById('1');
+
+console.log(user); // UserEntity instance for John Doe
+```
+
+#### Removing an Entity by ID
+
+You can remove an entity from the group by its ID using the `removeById` method.
+
+```typescript
+usersGroup.removeById('2');
+
+console.log(usersGroup.length); // 1 (only John Doe remains)
+```
+
 ## Repositories
 
 ### Defining the Repository Interface
@@ -281,7 +354,7 @@ export interface UserRepository extends Repository<UserEntity> {
 	// "Repository" interface already includes as required the methods:
 	// create(entity: TEntity): Promise<TEntity | void>;
 	// update(entity: TEntity): Promise<TEntity | void>;
-	// delete(entity: TEntity): Promise<boolean>;
+	// delete(id: EntityId): Promise<boolean>;
 
 	// Define custom methods for UserRepository here
 	findByEmail(email: string): Promise<UserEntity | null>;
@@ -326,9 +399,9 @@ export class InMemoryUserRepository extends BaseRepository<UserEntity> implement
 	}
 
 	// Required method from Repository interface
-	async delete(entity: UserEntity): Promise<boolean> {
+	async delete(id: string): Promise<boolean> {
 		this.users.splice(
-			this.users.findIndex(user => user.id === entity.id),
+			this.users.findIndex(user => user.id === id),
 			1
 		);
 
@@ -412,9 +485,5 @@ import { InMemoryUserRepository } from './InMemoryUserRepository.js';
 
 const userRepository = new InMemoryUserRepository();
 
-const user = await userRepository.findByEmail('john.doe@example.com');
-
-if (user) {
-	await userRepository.delete(user);
-}
+const success = await userRepository.delete('1'); // returns true if deletion was successful
 ```
