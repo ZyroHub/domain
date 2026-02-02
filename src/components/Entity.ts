@@ -149,6 +149,10 @@ export abstract class Entity<
 		this._changes = {};
 	}
 
+	public unwrap(): TEntityData {
+        return Objects.clone(this._rawData);
+    }
+
 	static fromList<T extends typeof Entity>(this: T, items: any[]): EntityGroup<InstanceType<T>> {
 		const instances = items.map(item => new (this as any)(item));
 		return new EntityGroup(instances);
