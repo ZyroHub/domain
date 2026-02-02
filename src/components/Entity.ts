@@ -1,29 +1,18 @@
 import { Objects } from '@zyrohub/utilities';
 
-export interface EntityToObjectOptions {
-	view?: string;
-
-	[key: string]: any;
-}
-
-export interface EntityOptions<TEntityData, TEntityRelations = {}, TEntityId = string> {
-	id?: TEntityId;
-	idGenerator?: () => TEntityId;
-	data: TEntityData;
-	relations?: TEntityRelations;
-	createdAt?: Date;
-	updatedAt?: Date;
-}
+import { EntityOptions, EntityToObjectOptions } from '@/types/entity.js';
 
 export abstract class Entity<
-	TEntityData extends object,
-	TEntityRelations extends object = {},
+	TEntityData extends Record<string, any>,
+	TEntityRelations extends Record<string, any> = {},
 	TEntityToObjectOptions extends EntityToObjectOptions = EntityToObjectOptions,
 	TEntityId = string
 > {
 	protected _id: TEntityId | undefined;
 	protected _createdAt: Date;
 	protected _updatedAt: Date;
+
+	public exists: boolean;
 
 	protected readonly _rawData: TEntityData;
 	public readonly data: TEntityData;
@@ -34,9 +23,16 @@ export abstract class Entity<
 	private _changes: Partial<TEntityData> = {};
 
 	constructor(protected options: EntityOptions<TEntityData, TEntityRelations, TEntityId>) {
-		this._id = options.id ?? (options.idGenerator ? options.idGenerator() : (undefined as unknown as TEntityId));
+		const hasIdentifier = !!(options.id ?? options.data.id);
+
+		this._id =
+			options.data.id ??
+			options.id ??
+			(options.idGenerator ? options.idGenerator() : (undefined as unknown as TEntityId));
 		this._createdAt = options.createdAt || new Date();
 		this._updatedAt = options.updatedAt || new Date();
+
+		this.exists = options.exists ?? hasIdentifier;
 
 		this._rawData = options.data;
 		this.data = this.createProxy(this._rawData);
