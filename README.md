@@ -378,7 +378,7 @@ export class InMemoryUserRepository extends BaseRepository<UserEntity> implement
 
 	// Required method from Repository interface
 	async create(entity: UserEntity): Promise<void | UserEntity> {
-		this.users.push(entity);
+		this.users.push(entity.unwrap()); // store raw data of the entity
 		entity.commit(); // commit changes after creation
 
 		return entity;
@@ -389,8 +389,11 @@ export class InMemoryUserRepository extends BaseRepository<UserEntity> implement
 		const index = this.users.findIndex(user => user.id === entity.id);
 
 		if (index !== -1) {
-			this.users[index] = entity;
-			this.users[index].commit(); // commit changes after update
+			this.users[index] = {
+				...this.users[index],
+
+				...entity.getChanges() // apply only changes
+			};
 
 			return entity;
 		} else {
