@@ -1,6 +1,6 @@
 import { Entity } from './Entity.js';
 
-export class EntityGroup<T extends Entity<any>> extends Array<T> {
+export class EntityGroup<T extends Entity<any, any, any, any>> extends Array<T> {
 	constructor(items?: number | T[]) {
 		if (typeof items === 'number') {
 			super(items);

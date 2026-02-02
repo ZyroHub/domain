@@ -2,6 +2,8 @@ import { Objects } from '@zyrohub/utilities';
 
 import { EntityOptions, EntityToObjectOptions } from '@/types/entity.js';
 
+import { EntityGroup } from './EntityGroup.js';
+
 export abstract class Entity<
 	TEntityData extends Record<string, any>,
 	TEntityRelations extends Record<string, any> = {},
@@ -145,5 +147,10 @@ export abstract class Entity<
 
 	public commit() {
 		this._changes = {};
+	}
+
+	static fromList<T extends typeof Entity>(this: T, items: any[]): EntityGroup<InstanceType<T>> {
+		const instances = items.map(item => new (this as any)(item));
+		return new EntityGroup(instances);
 	}
 }
