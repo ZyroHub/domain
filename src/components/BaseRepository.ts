@@ -1,4 +1,3 @@
-import { EntityId } from '@/types/entity.js';
 import { Repository } from '@/types/repository.js';
 
 import { Entity } from './Entity.js';
@@ -6,7 +5,7 @@ import { Entity } from './Entity.js';
 export abstract class BaseRepository<T extends Entity<any, any, any>> implements Repository<T> {
 	abstract create(entity: T): Promise<T | void>;
 	abstract update(entity: T): Promise<T | void>;
-	abstract delete(id: EntityId): Promise<void>;
+	abstract delete(entity: T): Promise<boolean>;
 
 	async save(entity: T): Promise<T | void> {
 		if (entity.exists) {
