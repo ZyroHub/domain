@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"author": "DMVMarcio",
 	"type": "module",
-	"description": "A collection of utility functions and classes.",
+	"description": "A robust TypeScript library for building Domain Entities and Repositories with built-in dirty checking, reactive state management, and strict type safety.",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -27,7 +27,16 @@
 	"files": [
 		"dist"
 	],
-	"keywords": [],
+	"keywords": [
+		"typescript",
+		"domain-driven-design",
+		"ddd",
+		"entity",
+		"repository",
+		"dirty-checking",
+		"state-management",
+		"clean-architecture"
+	],
 	"license": "MIT",
 	"dependencies": {
 		"@zyrohub/utilities": "^1.0.17"
