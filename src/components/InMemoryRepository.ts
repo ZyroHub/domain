@@ -27,4 +27,8 @@ export class InMemoryRepository<TEntity extends Entity<any>> extends BaseReposit
 		this.items.splice(index, 1);
 		return true;
 	}
+
+	async clear(): Promise<void> {
+		this.items = [];
+	}
 }

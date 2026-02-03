@@ -435,6 +435,7 @@ import { UserEntity } from './UserEntity.js';
 
 export class InMemoryUserRepository extends InMemoryRepository<UserEntity> implements IUserRepository {
 	// create, update, delete and save methods are already implemented in InMemoryRepository automatically
+	// also add some useful methods like "clear"(to use in tests), etc.
 
 	// Your custom methods from UserRepository interface
 	async findByEmail(email: string): Promise<UserEntity | null> {
