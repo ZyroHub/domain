@@ -395,6 +395,8 @@ export class InMemoryUserRepository extends BaseRepository<UserEntity> implement
 				...entity.getChanges() // apply only changes
 			};
 
+			entity.commit(); // commit changes after update
+
 			return entity;
 		} else {
 			throw new Error('User not found');
