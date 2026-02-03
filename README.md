@@ -23,6 +23,7 @@ This package contains the domain logic of the applications. It defines the essen
 - [Repositories](#repositories)
     - [Defining the Repository Interface](#defining-the-repository-interface)
     - [Creating a Repository](#creating-a-repository)
+    - [In Memory Repository](#in-memory-repository)
     - [Repository Example Usage](#repository-example-usage)
         - [Save](#save)
         - [Create](#create)
@@ -350,7 +351,7 @@ import { Repository } from '@zyrohub/domain';
 
 import { UserEntity } from './UserEntity.js';
 
-export interface UserRepository extends Repository<UserEntity> {
+export interface IUserRepository extends Repository<UserEntity> {
 	// "Repository" interface already includes as required the methods:
 	// create(entity: TEntity): Promise<TEntity | void>;
 	// update(entity: TEntity): Promise<TEntity | void>;
@@ -368,11 +369,11 @@ Then, implement the repository by extending the `BaseRepository` class and imple
 ```typescript
 import { BaseRepository } from '@zyrohub/domain';
 
+import { IUserRepository } from './IUserRepository.js';
 import { UserEntity } from './UserEntity.js';
-import { UserRepository } from './UserRepository.js';
 
 // An example implementation of UserRepository using an in-memory array
-export class InMemoryUserRepository extends BaseRepository<UserEntity> implements UserRepository {
+export class InMemoryUserRepository extends BaseRepository<UserEntity> implements IUserRepository {
 	// In-memory user storage (for demonstration purposes)
 	private users: UserEntity[] = [];
 
@@ -416,6 +417,28 @@ export class InMemoryUserRepository extends BaseRepository<UserEntity> implement
 	// Your custom methods from UserRepository interface
 	async findByEmail(email: string): Promise<UserEntity | null> {
 		const user = this.users.find(user => user.data.email === email);
+
+		return user || null;
+	}
+}
+```
+
+### In Memory Repository
+
+The `InMemoryRepository` class provides a simple in-memory data management solution for entities. It extends the `BaseRepository` class and implements basic CRUD operations using an internal array to store entities.
+
+```typescript
+import { InMemoryRepository } from '@zyrohub/domain';
+
+import { IUserRepository } from './IUserRepository.js';
+import { UserEntity } from './UserEntity.js';
+
+export class InMemoryUserRepository extends InMemoryRepository<UserEntity> implements IUserRepository {
+	// create, update, delete and save methods are already implemented in InMemoryRepository automatically
+
+	// Your custom methods from UserRepository interface
+	async findByEmail(email: string): Promise<UserEntity | null> {
+		const user = this.items.find(user => user.data.email === email);
 
 		return user || null;
 	}
