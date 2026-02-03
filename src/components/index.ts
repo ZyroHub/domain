@@ -1,3 +1,4 @@
 export * from './BaseRepository.js';
 export * from './Entity.js';
 export * from './EntityGroup.js';
+export * from './InMemoryRepository.js';

@@ -3,12 +3,12 @@ import { Repository } from '@/types/repository.js';
 
 import { Entity } from './Entity.js';
 
-export abstract class BaseRepository<T extends Entity<any, any, any>> implements Repository<T> {
-	abstract create(entity: T): Promise<T | void>;
-	abstract update(entity: T): Promise<T | void>;
+export abstract class BaseRepository<TEntity extends Entity<any, any, any>> implements Repository<TEntity> {
+	abstract create(entity: TEntity): Promise<TEntity | void>;
+	abstract update(entity: TEntity): Promise<TEntity | void>;
 	abstract delete(id: EntityId): Promise<boolean>;
 
-	async save(entity: T): Promise<T | void> {
+	async save(entity: TEntity): Promise<TEntity | void> {
 		if (entity.exists) {
 			if (!entity.isDirty()) return entity;
 			const updatedEntity = await this.update(entity);
