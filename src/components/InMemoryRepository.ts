@@ -4,10 +4,10 @@ import { BaseRepository } from './BaseRepository.js';
 import { Entity } from './Entity.js';
 
 export class InMemoryRepository<TEntity extends Entity<any>> extends BaseRepository<TEntity> {
-	public items: TEntity[] = [];
+	public items: TEntity['data'][] = [];
 
 	async create(entity: TEntity): Promise<TEntity | void> {
-		this.items.push(entity);
+		this.items.push(entity.unwrap());
 
 		return entity;
 	}
@@ -16,7 +16,7 @@ export class InMemoryRepository<TEntity extends Entity<any>> extends BaseReposit
 		const index = this.items.findIndex(item => item.id === entity.id);
 		if (index === -1) return;
 
-		this.items[index] = entity;
+		this.items[index] = entity.unwrap();
 		return entity;
 	}
 
