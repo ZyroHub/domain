@@ -12,23 +12,23 @@ This package contains the domain logic of the applications. It defines the essen
 - [Table of Contents](#table-of-contents)
 - [Getting Started](#getting-started)
 - [Entities](#entities)
-    - [Creating a Basic Entity](#creating-a-basic-entity)
-    - [Custom ID Generation](#custom-id-generation)
-    - [Entity Relations](#entity-relations)
-    - [Customizing Entity Output with filterObject](#customizing-entity-output-with-filterobject)
-    - [Collecting list of changes](#collecting-list-of-changes)
-    - [Group of Entities (EntityGroup)](#group-of-entities-entitygroup)
-        - [Getting an Entity by ID](#getting-an-entity-by-id)
-        - [Removing an Entity by ID](#removing-an-entity-by-id)
+	- [Creating a Basic Entity](#creating-a-basic-entity)
+	- [Custom ID Generation](#custom-id-generation)
+	- [Entity Relations](#entity-relations)
+	- [Customizing Entity Output with filterObject](#customizing-entity-output-with-filterobject)
+	- [Collecting list of changes](#collecting-list-of-changes)
+	- [Group of Entities (EntityGroup)](#group-of-entities-entitygroup)
+		- [Getting an Entity by ID](#getting-an-entity-by-id)
+		- [Removing an Entity by ID](#removing-an-entity-by-id)
 - [Repositories](#repositories)
-    - [Defining the Repository Interface](#defining-the-repository-interface)
-    - [Creating a Repository](#creating-a-repository)
-    - [In Memory Repository](#in-memory-repository)
-    - [Repository Example Usage](#repository-example-usage)
-        - [Save](#save)
-        - [Create](#create)
-        - [Update](#update)
-        - [Delete](#delete)
+	- [Defining the Repository Interface](#defining-the-repository-interface)
+	- [Creating a Repository](#creating-a-repository)
+	- [In Memory Repository](#in-memory-repository)
+	- [Repository Example Usage](#repository-example-usage)
+		- [Save](#save)
+		- [Create](#create)
+		- [Update](#update)
+		- [Delete](#delete)
 
 ## Getting Started
 
@@ -378,15 +378,14 @@ export class InMemoryUserRepository extends BaseRepository<UserEntity> implement
 	private users: UserEntity[] = [];
 
 	// Required method from Repository interface
-	async create(entity: UserEntity): Promise<void | UserEntity> {
+	async create(entity: UserEntity): Promise<void> {
 		this.users.push(entity.unwrap()); // store raw data of the entity
 		entity.commit(); // commit changes after creation
-
-		return entity;
+		entity.exists = true; // mark entity as existing
 	}
 
 	// Required method from Repository interface
-	async update(entity: UserEntity): Promise<void | UserEntity> {
+	async update(entity: UserEntity): Promise<void> {
 		const index = this.users.findIndex(user => user.id === entity.id);
 
 		if (index !== -1) {
@@ -397,8 +396,6 @@ export class InMemoryUserRepository extends BaseRepository<UserEntity> implement
 			};
 
 			entity.commit(); // commit changes after update
-
-			return entity;
 		} else {
 			throw new Error('User not found');
 		}

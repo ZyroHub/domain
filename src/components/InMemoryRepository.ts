@@ -6,18 +6,23 @@ import { Entity } from './Entity.js';
 export class InMemoryRepository<TEntity extends Entity<any>> extends BaseRepository<TEntity> {
 	public items: TEntity['data'][] = [];
 
-	async create(entity: TEntity): Promise<TEntity | void> {
+	async create(entity: TEntity): Promise<void> {
 		this.items.push(entity.unwrap());
 
-		return entity;
+		entity.exists = true;
+		entity.commit();
 	}
 
-	async update(entity: TEntity): Promise<void | TEntity> {
+	async update(entity: TEntity): Promise<void> {
 		const index = this.items.findIndex(item => item.id === entity.id);
 		if (index === -1) return;
 
-		this.items[index] = entity.unwrap();
-		return entity;
+		this.items[index] = {
+			...this.items[index],
+			...entity.getChanges()
+		};
+
+		entity.commit();
 	}
 
 	async delete(id: EntityId): Promise<boolean> {

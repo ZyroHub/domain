@@ -1,6 +1,6 @@
 {
 	"name": "@zyrohub/domain",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"author": "DMVMarcio",
 	"type": "module",
 	"description": "A robust TypeScript library for building Domain Entities and Repositories with built-in dirty checking, reactive state management, and strict type safety.",
