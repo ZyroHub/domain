@@ -353,9 +353,11 @@ import { UserEntity } from './UserEntity.js';
 
 export interface IUserRepository extends Repository<UserEntity> {
 	// "Repository" interface already includes as required the methods:
-	// create(entity: TEntity): Promise<TEntity | void>;
-	// update(entity: TEntity): Promise<TEntity | void>;
+	// create(entity: TEntity): Promise<void>;
+	// update(entity: TEntity): Promise<void>;
 	// delete(id: EntityId): Promise<boolean>;
+
+	// save(entity: TEntity): Promise<void>; is already included in BaseRepository class
 
 	// Define custom methods for UserRepository here
 	findByEmail(email: string): Promise<UserEntity | null>;
