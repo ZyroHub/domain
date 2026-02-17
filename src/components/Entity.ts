@@ -149,8 +149,14 @@ export abstract class Entity<
 		this._changes = {};
 	}
 
-	public unwrap(): TEntityData {
-		return Objects.clone(this._rawData);
+	public unwrap(): TEntityData & { id?: TEntityId } {
+		const unwrappedData = Objects.clone(this._rawData) as TEntityData & { id?: TEntityId };
+
+		if (this.id !== undefined) {
+			unwrappedData.id = this.id;
+		}
+
+		return unwrappedData;
 	}
 
 	static fromList<T extends new (...args: any[]) => any>(this: T, items: any[]): EntityGroup<InstanceType<T>> {
