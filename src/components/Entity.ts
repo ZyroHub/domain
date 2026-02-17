@@ -37,6 +37,8 @@ export abstract class Entity<
 		this.exists = options.exists ?? hasIdentifier;
 
 		this._rawData = options.data;
+		if (this._rawData.id) delete this._rawData.id;
+
 		this.data = this.createProxy(this._rawData);
 
 		this.relations = options.relations || ({} as TEntityRelations);
